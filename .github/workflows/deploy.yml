@@ -26,6 +26,7 @@ jobs:
       run: echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/credentials.json" >> $GITHUB_ENV;
     
     - name: Setup Credentials Finalize
+      run: |
         echo ${GOOGLE_APPLICATION_CREDENTIALS};
         echo ${{ secrets.TF_GOOGLE_CREDENTIALS }} | base64 -d > "${GOOGLE_APPLICATION_CREDENTIALS}";
 
