@@ -6,9 +6,6 @@ on:
     - main
   pull_request:
 
-env:
-  GOOGLE_APPLICATION_CREDENTIALS: $GITHUB_WORKSPACE/credentials.json
-
 jobs:
   terraform:
     name: 'Terraform'
@@ -24,6 +21,11 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+    
+    - name: Setup Credentials
+      run: |
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/credentials.json" >> $GITHUB_ENV
+        echo ${{ secrets.TF_GOOGLE_CREDENTIALS }} | base64 -d > $GOOGLE_APPLICATION_CREDENTIALS
 
     - name: Setup Credentials
       run: echo ${{ secrets.TF_GOOGLE_CREDENTIALS }} | base64 -d > $GOOGLE_APPLICATION_CREDENTIALS
