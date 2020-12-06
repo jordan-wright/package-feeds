@@ -23,8 +23,9 @@ jobs:
       uses: hashicorp/setup-terraform@v1
     
     - name: Setup Credentials
-      run: |
-        echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/credentials.json" >> $GITHUB_ENV;
+      run: echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/credentials.json" >> $GITHUB_ENV;
+    
+    - name: Setup Credentials Finalize
         echo ${GOOGLE_APPLICATION_CREDENTIALS};
         echo ${{ secrets.TF_GOOGLE_CREDENTIALS }} | base64 -d > "${GOOGLE_APPLICATION_CREDENTIALS}";
 
