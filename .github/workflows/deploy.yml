@@ -32,6 +32,9 @@ jobs:
         service_account_key: ${{ secrets.TF_GOOGLE_CREDENTIALS }}
         export_default_credentials: true
 
+    - name: Configure gcloud
+      run: gcloud config set project ${{ secrets.GOOGLE_PROJECT_ID }}
+
     - name: Generate the images for each feed 
       run: |
         cd feeds/pypi;
