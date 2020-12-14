@@ -21,15 +21,22 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
-    
+
     - name: Setup Environment
       run: echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/credentials.json" >> $GITHUB_ENV;
-    
-    - name: Setup Credentials
-      run: echo ${{ secrets.TF_GOOGLE_CREDENTIALS }} | base64 -d > "${GOOGLE_APPLICATION_CREDENTIALS}";
 
-    - name: Generate the function archives
-      run: cd feeds/pypi; zip pypi.zip *; cd ../../;
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.TF_GOOGLE_CREDENTIALS }}
+        export_default_credentials: true
+
+    - name: Generate the images for each feed 
+      run: |
+        cd feeds/pypi;
+        gcloud builds submit --tag gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/feeds-pypi;
+        cd ../../;
 
     - name: Terraform Init
       run: terraform init
