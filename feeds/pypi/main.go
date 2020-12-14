@@ -1,9 +1,11 @@
 package main
 
 import (
-	"context"
 	"encoding/xml"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -65,10 +67,11 @@ type PubSubMessage struct {
 
 // Poll receives a message from Cloud Pub/Sub. Ideally, this will be from a
 // Cloud Scheduler trigger every `delta`.
-func Poll(ctx context.Context, m PubSubMessage) error {
+func Poll(w http.ResponseWriter, r *http.Request) {
 	packages, err := fetchPackages()
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	cutoff := time.Now().UTC().Add(-delta)
 	for _, pkg := range packages {
@@ -78,12 +81,17 @@ func Poll(ctx context.Context, m PubSubMessage) error {
 		// TODO: publish the package up to a cloud pub/sub for processing
 		packages = append(packages, pkg)
 	}
-	return nil
 }
 
 func main() {
-	err := Poll(context.Background(), PubSubMessage{})
-	if err != nil {
-		panic(err)
+	log.Print("polling pypi for packages")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
+	http.HandleFunc("/", Poll)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
+		log.Fatal(err)
 	}
 }
