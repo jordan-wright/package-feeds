@@ -60,14 +60,10 @@ func fetchPackages() ([]*Package, error) {
 	return rssResponse.Packages, nil
 }
 
-// PubSubMessage is the payload of a Pub/Sub event.
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
 // Poll receives a message from Cloud Pub/Sub. Ideally, this will be from a
 // Cloud Scheduler trigger every `delta`.
 func Poll(w http.ResponseWriter, r *http.Request) {
+	log.Print("Executing poll")
 	packages, err := fetchPackages()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -81,6 +77,7 @@ func Poll(w http.ResponseWriter, r *http.Request) {
 		// TODO: publish the package up to a cloud pub/sub for processing
 		packages = append(packages, pkg)
 	}
+	w.Write([]byte("OK"))
 }
 
 func main() {
