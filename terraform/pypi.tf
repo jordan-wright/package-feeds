@@ -23,7 +23,7 @@ resource "google_cloud_run_service" "run-pypi" {
         image = "gcr.io/${var.project}/feeds-pypi"
         env {
           name  = "OSSMALWARE_TOPIC_URL"
-          value = google_pubsub_topic.feed-topic.id
+          value = "gcppubsub://${google_pubsub_topic.feed-topic.id}"
         }
       }
     }
