@@ -35,10 +35,13 @@ jobs:
     - name: Configure gcloud
       run: gcloud config set project ${{ secrets.GOOGLE_PROJECT_ID }}
 
-    - name: Generate the images for each feed 
+    - name: Generate the images for each feed
       run: |
         cd feeds/pypi;
         gcloud builds submit --tag gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/feeds-pypi;
+        cd ../../;
+        cd feeds/rubygems;
+        gcloud builds submit --tag gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/feeds-rubygems;
         cd ../../;
 
     - name: Terraform Init
